@@ -3,37 +3,38 @@ import pygame
 pygame.init()
 
 #screen dimensions
-SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 800
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
 
 #fonts
-FONT = pygame.font.SysFont("Impact", 40)
-FONT1 = pygame.font.SysFont("Impact", 60)
+PIXEL_FONT = pygame.font.Font("slkscr.ttf", 40)
 
 #colours
 WHITE = (255, 255, 255)
-HIGHLIGHT = (100, 200, 255)
-TITLE_COLOUR = (209, 211, 255)
-
-#title text
-title = "AGH Marines Games"
+HIGHLIGHT = (178, 176, 235)
 
 #menu options
 options = ["Play Game 1", "Play Game 2", "Play Game 3", "Exit"]
 select = 0
-lengths = [len(option) for option in options]
+spacing = 50
 
 #images
 background = pygame.image.load("images/ocean.jpg")
-icon = pygame.image.load("images/main_menu_icon.png")
-game1 = pygame.image.load("images/game1.png")
-game2 = pygame.image.load("images/game2.png")
-game3 = pygame.image.load("images/game3.png")
+title = pygame.image.load("images/title.png")
+
+game_images = [
+    pygame.image.load("images/game1.png"),
+    pygame.image.load("images/game2.png"),
+    pygame.image.load("images/game3.png")
+]
+
+option_frame = pygame.image.load("images/option_frame1.png")
+option_frame_highlight = pygame.image.load("images/option_frame2.png")
+
 
 #setting the window
-window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("AGH Marines Games")
-pygame.display.set_icon(icon)
 
 
 #used to display any text
@@ -41,10 +42,7 @@ def put_text(text, font, colour, x, y):
     img = font.render(text, True, colour)
     window.blit(img, (x, y))
 
-#rectangles
-def draw_rect(colour, x, y, width, height):
-    pygame.draw.rect(window, colour, (x, y, width, height), 2, 20)
-
+#returns width necessary fo the test
 def calc_total_width(text, font):
     total_width = font.size(text)[0]
     return total_width
@@ -53,15 +51,11 @@ def calc_total_width(text, font):
 #main loop
 run = True
 while run:
-    window.blit(background, (0,0))
-
-    #menu title
-    start_x = (SCREEN_WIDTH - calc_total_width(title, FONT1)) // 2
-    put_text(title, FONT1, TITLE_COLOUR, start_x, SCREEN_HEIGHT // 4)
-
+    window.fill((10, 4, 26))
+    window.blit(title, (160, 40))
 
     #menu options
-    total_width = sum(FONT.size(option)[0] + 40 for option in options)
+    total_width = sum(PIXEL_FONT.size(option)[0] for option in options) + spacing * (len(options) - 1)
     start_x = (SCREEN_WIDTH - total_width) // 2
     x = start_x
 
@@ -70,14 +64,19 @@ while run:
             colour = HIGHLIGHT
         else:
             colour = WHITE
+            
         if option != "Exit":
-            a = calc_total_width(option, FONT) + 60
-            draw_rect(colour, x-30, SCREEN_HEIGHT//2, a, a)
-            put_text(option, FONT, colour, x, SCREEN_HEIGHT//2)
-            x += FONT.size(option)[0] + 40 + FONT.size("Exit")[0] #spacing between options
+            if i == select:
+                window.blit(option_frame_highlight, (x-25, SCREEN_HEIGHT//2 - 20))
+            else:
+                window.blit(option_frame, (x-25, SCREEN_HEIGHT//2 - 20))
+
+            put_text(option, PIXEL_FONT, colour, x, SCREEN_HEIGHT//2)
+            window.blit(game_images[i], (x + 25, SCREEN_HEIGHT//2 + 45))
+            x += PIXEL_FONT.size(option)[0] + 10 + PIXEL_FONT.size("Exit")[0] #spacing between options
 
     #exit button
-    put_text("Exit", FONT, colour, SCREEN_WIDTH *0.9, SCREEN_HEIGHT*0.9)
+    put_text("Exit", PIXEL_FONT, colour, SCREEN_WIDTH *0.9, SCREEN_HEIGHT*0.9)
 
 
     #event handler
