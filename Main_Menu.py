@@ -19,7 +19,6 @@ select = 0
 spacing = 50
 
 #images
-background = pygame.image.load("images/ocean.jpg")
 title = pygame.image.load("images/title.png")
 
 game_images = [
@@ -42,11 +41,6 @@ def put_text(text, font, colour, x, y):
     img = font.render(text, True, colour)
     window.blit(img, (x, y))
 
-#returns width necessary fo the test
-def calc_total_width(text, font):
-    total_width = font.size(text)[0]
-    return total_width
-
 
 #main loop
 run = True
@@ -56,6 +50,7 @@ while run:
 
     #menu options
     total_width = sum(PIXEL_FONT.size(option)[0] for option in options) + spacing * (len(options) - 1)
+    #total_width = sum(PIXEL_FONT.size(option)[0] for option in options)
     start_x = (SCREEN_WIDTH - total_width) // 2
     x = start_x
 
@@ -64,7 +59,6 @@ while run:
             colour = HIGHLIGHT
         else:
             colour = WHITE
-            
         if option != "Exit":
             if i == select:
                 window.blit(option_frame_highlight, (x-25, SCREEN_HEIGHT//2 - 20))
