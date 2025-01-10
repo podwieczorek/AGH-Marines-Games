@@ -1,5 +1,18 @@
 # AGH-Marines-Games
-Główne menu do wyboru gier
-sterowanie strałki i enter
+Gra "Marine Lens"
+Co działa:
+- menu gry
+- wyświetlanie się instrukcji
+- sterowanie postacią + animacja
+- pływające "rybki"
+- ograniczenie czasowe
 
-obrazki game1, game2 i game3 zostaną zastąpione przez miniaturki gierek, żeby służyły jako zachęcający podgląd
+Do dodanie:
+- zasięg aparatu (hitbox)
+- mechanika robienia zdjęć
+- podliczanie punktów
+- grafiki: małe ryby, duże ryby i inne stworzenia
+- ekran game over, po minięciu czasu (60s)
+- najwyższy wynik
+- lepsze grafiki do menu gry
+- cooldown aparatu do zdjęć z animacją
