@@ -50,7 +50,6 @@ while run:
 
     #menu options
     total_width = sum(PIXEL_FONT.size(option)[0] for option in options) + spacing * (len(options) - 1)
-    #total_width = sum(PIXEL_FONT.size(option)[0] for option in options)
     start_x = (SCREEN_WIDTH - total_width) // 2
     x = start_x
 
