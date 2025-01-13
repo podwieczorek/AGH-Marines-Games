@@ -4,6 +4,8 @@ import opensimplex
 
 
 def draw_square(screen, color, x, y, size):
+    x += (SCREEN_WIDTH / CELL_SIZE - maze.cols) // 2
+    y += (SCREEN_HEIGHT / CELL_SIZE - maze.rows) // 2
     rect = pygame.Rect(x * size, y * size, size, size)
     pygame.draw.rect(screen, color, rect)
 
@@ -39,8 +41,11 @@ class Maze:
                 else:
                     self.grid[y][x] = 0
                     
-    def remove_not_connected_spaces(self):
-        def bfs(x,y):
+                    
+    def remove_not_connected_spaces(self, visited):
+        def bfs(x,y, visited):
+            if (x,y) in visited:
+                return set()
             visited = set()
             queue = [(x,y)]
             while queue:
@@ -51,65 +56,33 @@ class Maze:
                         new_x, new_y = x + dx, y + dy
                         if 0 <= new_x < self.cols and 0 <= new_y < self.rows and self.grid[new_y][new_x] == 0:
                             queue.append((new_x, new_y))
-                            if len(visited) > 25:
-                                return visited
             return visited
         
         
         visited = set()
+        blobs = []
         for y in range(self.rows):
             for x in range(self.cols):
-                if self.grid[y][x] not in visited or self.grid[y][x] == 0:
-                    blob = bfs(x,y)
+                if self.grid[y][x] not in visited and self.grid[y][x] == 0:
+                    blob = bfs(x,y, visited)
                     visited.update(blob)
-                    if len(blob) < 25:
-                        for x,y in blob:
-                            self.grid[y][x] = 1
-        
-    
-        
-        
-        
-    
-
-    def carve(self, x=0, y=0):
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # Right, Down, Left, Up
-        random.shuffle(directions)  # Randomize the order of traversal
-
-        for dx, dy in directions:
-            nx, ny = x + 2 * dx, y + 2 * dy  # Look two cells away
-
-            if 0 <= nx < self.cols and 0 <= ny < self.rows and self.grid[ny][nx] == 1:
-                # Remove the wall between the current cell and the next cell
-                self.grid[y + dy][x + dx] = 0
-                self.grid[ny][nx] = 0
-                # Recursively generate the maze from the next cell
-                self.carve(nx, ny)
-    
-    
-    
-    
-    def add_paths(self, probability):
-        for y in range(self.rows-1):
-            for x in range(self.cols-1):
-                if self.grid[y][x] == 1:
-                    neighbors = sum(self.grid[y + dy][x + dx] == 0 # count amount of neighbors
-                                    for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]) 
+                    blobs.append(blob)
                     
-                    if neighbors == 2 and random.random() < probability:
-                        self.grid[y][x] = 0;
-            
-            
-            
+        blobs = sorted(blobs, key=len)
+        blobs.pop()
+        for blob in blobs:
+            for x,y in blob:
+                self.grid[y][x] = 1
+        
+    
+
 
     def draw(self):
-        offset_x = (SCREEN_WIDTH / CELL_SIZE - self.cols) // 2
-        offset_y = (SCREEN_HEIGHT / CELL_SIZE - self.rows) // 2
         for y in range(self.rows):
             for x in range(self.cols):
                 color = COLORS[self.grid[y][x]]
-                draw_square(screen, color, x + offset_x, y + offset_y, CELL_SIZE)
-                rect = pygame.Rect((x + offset_x) * CELL_SIZE, (y + offset_y) * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                draw_square(screen, color, x, y, CELL_SIZE)
+                rect = pygame.Rect((x) * CELL_SIZE, (y) * CELL_SIZE, CELL_SIZE, CELL_SIZE)
 
     def get_valid_directions(self, x, y):
         valid_directions = [(0, 0)]
@@ -122,18 +95,27 @@ class Maze:
 class Unit:
     unit_list = []
     tag = 'nikt'
-    def __init__(self, maze):
+    def __init__(self, maze, speed):
+        self.last_frame = 0
+        self.speed = speed
         self.maze = maze
         self.x = -1  # Initialize x position
         self.y = -1  # Initialize y position
         if self not in self.unit_list:
-            self.unit_list.append(self)  # Append the instance to Unit.list
-
+            self.unit_list.append(self) # Append the instance to Unit.list
+            
+    
     def __str__(self):
         return f'Unit {self.unit_list.index(self)}'
 
     def __repr__(self):
         return self.__str__()   
+    
+    def check_colision(self):
+        for unit in Unit.unit_list:
+            if self.does_colide(unit):
+                unit.colides(self)
+    
     
     def get_valid_directions(self):
         valid_directions = [(0, 0)]
@@ -147,9 +129,7 @@ class Unit:
         pass
     
     def draw(self):
-        offset_x = (SCREEN_WIDTH / CELL_SIZE - maze.cols) // 2
-        offset_y = (SCREEN_HEIGHT / CELL_SIZE - maze.rows) // 2
-        draw_square(screen, (0, 255, 0), self.x + offset_x, self.y + offset_y, CELL_SIZE)
+        draw_square(screen, (0, 255, 0), self.x, self.y, CELL_SIZE)
 
 
     def does_colide(self, other):
@@ -177,12 +157,15 @@ class Unit:
                     queue.append((new_x, new_y, path + [(dx, dy)]))
 
         return []
+    
+    
+        
 
 class Player(Unit):
     tag = 'gracz'
     player_list = []
-    def __init__(self, maze: Maze, hp, key_list = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d, pygame.K_SPACE]):
-        super().__init__(maze)  # Call Unit's __init__ to initialize maze, x, y, and append to list
+    def __init__(self, maze: Maze, hp, speed  = 10, key_list = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d, pygame.K_SPACE]):
+        super().__init__(maze, speed)  # Call Unit's __init__ to initialize maze, x, y, and append to list
         self.direction = (0, 0)
         self.input_stack = []
         self.key_list = key_list
@@ -223,15 +206,14 @@ class Player(Unit):
             
             
     def draw(self):
-        offset_x = (SCREEN_WIDTH / CELL_SIZE - maze.cols) // 2
-        offset_y = (SCREEN_HEIGHT / CELL_SIZE - maze.rows) // 2
-        draw_square(screen, (255, 0, 0), self.x + offset_x, self.y + offset_y, CELL_SIZE)
+        draw_square(screen, (255, 0, 0), self.x, self.y, CELL_SIZE)
         
         
     def colides(self, other):
         match other.tag:
             case 'enemy':
                 self.hp -= 1
+                other.respawn()
                 #print("auuu")
             case 'pickup':
                 self.score += other.value
@@ -276,8 +258,8 @@ class Player(Unit):
     
 class Pickup(Unit):
     tag='pickup'
-    def __init__(self, maze, value=1  ):
-        super().__init__(maze)
+    def __init__(self, maze, value=1):
+        super().__init__(maze, 1)
         x = random.randint(0, maze.cols - 1)
         y = random.randint(0, maze.rows - 1)
         while maze.grid[y][x] == 1:
@@ -289,12 +271,13 @@ class Pickup(Unit):
         
         
     def step(self):
+        pass
+    
+    def check_colision(self):
         for player in Player.player_list:
             if self.does_colide(player):
                 player.colides(self)
                 self.colides(self)
-    
-    
                 
     def colides(self, other):
         self.__init__(maze, 1)
@@ -304,8 +287,8 @@ class Pickup(Unit):
 
 class Enemy(Unit):
     tag='enemy'
-    def __init__(self, maze, detection_radius = 10):
-        super().__init__(maze)
+    def __init__(self, maze, detection_radius = 10, speed = 10):
+        super().__init__(maze,speed)
         x = random.randint(0, maze.cols - 1)
         y = random.randint(0, maze.rows - 1)
         while maze.grid[y][x] == 1:
@@ -321,19 +304,14 @@ class Enemy(Unit):
     
     
     def step(self):
-        for player in Player.player_list:
-            if self.does_colide(player):
-                player.colides(self)
         self.ai()
         
     def draw_path(self):
-        offset_x = (SCREEN_WIDTH / CELL_SIZE - maze.cols) // 2
-        offset_y = (SCREEN_HEIGHT / CELL_SIZE - maze.rows) // 2
         path = []
         nx, ny = self.x, self.y
         for d in self.path:
             nx, ny = nx + d[0], ny + d[1]
-            draw_square(screen, (25, 25, 100), nx+offset_x, ny+offset_y, CELL_SIZE)
+            draw_square(screen, (25, 25, 100), nx, ny, CELL_SIZE)
         
             
     def ai(self):
@@ -353,7 +331,7 @@ class Enemy(Unit):
                 self.cooldown = base_cooldown
 
                 
-        self.draw_path()
+        
         if self.path != []:
             self.direction = self.path.pop(0)
         
@@ -366,7 +344,7 @@ class Enemy(Unit):
             target = random.choice(Unit.unit_list)
             if target.tag == 'pickup':
                 path = self.get_path_to(self.x, self.y, target, set())
-                if len(path) > 3:
+                if len(path) > 5:
                     return path
 
 
@@ -376,53 +354,68 @@ class Enemy(Unit):
                 return player
         return self
             
-    
-    
-    def remove_hp(self, player):
-        player.hp -= 1
-        self.__init__(maze)
         
     def draw(self):
-        offset_x = (SCREEN_WIDTH / CELL_SIZE - maze.cols) // 2
-        offset_y = (SCREEN_HEIGHT / CELL_SIZE - maze.rows) // 2
-        draw_square(screen, (0, 123, 255), self.x + offset_x, self.y + offset_y, CELL_SIZE)
+        draw_square(screen, (0, 123, 255), self.x, self.y, CELL_SIZE)
         
-        
+    def respawn(self):
+        x = random.randint(0, maze.cols - 1)
+        y = random.randint(0, maze.rows - 1)
+        while maze.grid[y][x] == 1:
+            x = random.randint(0, maze.cols - 1)
+            y = random.randint(0, maze.rows - 1)
+        print("respawn", x, y)
+        self.x = x
+        self.y = y
+        self.path = self.get_patrol_path()
+    
+    def check_colision(self):
+        #self.draw_path()# so it executes every frame
+        for player in Player.player_list:
+            if self.does_colide(player):
+                player.colides(self)
+                
+    def colides(self, other):
+        match other.tag:
+            case 'bullet':
+                self.respawn()
+            case _:
+                pass
 
 class Bullet(Unit):
     tag='bullet'
-    def __init__(self, maze, x, y, direction):
-        super().__init__(maze)
+    def __init__(self, maze, x, y, direction, speed = 30):
+        super().__init__(maze, speed)
         self.x = x
         self.y = y
         self.direction = direction
         
     def step(self):
-        if self.x < 0 or self.x >= maze.cols or self.y < 0 or self.y >= maze.rows:
-            Unit.unit_list.remove(self)
             
         self.x += self.direction[0]
         self.y += self.direction[1]
+         
+        if self.x < 0 or self.x > maze.cols-1 or self.y < 0  or self.y > maze.rows-1:
+            Unit.unit_list.remove(self)
+            print(self.x, self.y)
+            return
         
         if maze.grid[self.y][self.x] == 1:
             maze.grid[self.y][self.x] = 0
             self.colides(self)
-            
-        for unit in Unit.unit_list:
-            if self.does_colide(unit):
-                unit.colides(self)
-        
-        
+
+    
+    
     def colides(self, other):
         Unit.unit_list.remove(self)
         
     def draw(self):
-        offset_x = (SCREEN_WIDTH / CELL_SIZE - maze.cols) // 2
-        offset_y = (SCREEN_HEIGHT / CELL_SIZE - maze.rows) // 2
-        draw_square(screen, (255, 255, 0), self.x + offset_x, self.y + offset_y, CELL_SIZE)
+        draw_square(screen, (255, 255, 0), self.x, self.y, CELL_SIZE)
         
                 
-    
+class Animation():
+    pass
+
         
         
 
@@ -431,7 +424,7 @@ maze = Maze(80, 60)
 #maze.add_paths(0.40)
 #maze.simplex_cave(1,4,0.2)
 maze.simplex_cave()
-maze.remove_not_connected_spaces()
+maze.remove_not_connected_spaces(set())
 print(maze)
 
 player = Player(maze, 3)
@@ -458,7 +451,8 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 clock = pygame.time.Clock()
 running = True
-last_tick = pygame.time.get_ticks()
+last_speed_change = pygame.time.get_ticks()
+game_speed = 1000  # milliseconds per frame
 
 while running:
     # poll for events
@@ -468,6 +462,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     
+    
 
 
     
@@ -475,18 +470,23 @@ while running:
     player.input(events)
     
     current_time = pygame.time.get_ticks()
-    if current_time - last_tick >= TICK_INTERVAL:
-        screen.fill(COLORS[0])
-        maze.draw()
-        for u in Unit.unit_list:
-            
+    
+    game_speed = 1000 - current_time // 200
+    if game_speed < 300:
+        game_speed = 300
+    #print(game_speed)
+  
+    screen.fill(COLORS[0])
+    maze.draw()
+    for u in Unit.unit_list:
+        u.check_colision()
+        if current_time - u.last_frame > game_speed / u.speed:
             u.step()
-            u.draw()
-        last_tick = current_time
+            u.last_frame = current_time
+        u.draw()
+    last_tick = current_time
 
-    #print(Unit.unit_list)
-    #print(player.score)
-    #print(e.bfs(e.x, e.y, player, set()))
+
     
     
     pygame.display.flip() # flip() displays the drawing
