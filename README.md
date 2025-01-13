@@ -16,4 +16,3 @@
 ## Remarks
 
 ## Bugs
-- game can crash if map generates with unaccessible parts with piskups
