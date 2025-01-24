@@ -338,7 +338,7 @@ while run:
         game_over = True
         run = False
 
-        # Game Over Screen
+    #game over screen
     while game_over:
         win.blit(BACKGROUND_IMAGE, (0, 0))
         key = pygame.key.get_pressed()
@@ -354,13 +354,13 @@ while run:
         if key[pygame.K_RETURN]:
             pygame.time.delay(200)
 
-            # Reset game and return to the menu
+
             score = 0
             start_time = pygame.time.get_ticks()
             fish_list.clear()
             PLAYER_x, PLAYER_y = 860, 700
             game_over = False
-            menu = True  # Set menu to True to go back to the menu loop
+            menu = True
             
         elif key[pygame.K_ESCAPE]:
             pygame.time.delay(200)
