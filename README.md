@@ -4,15 +4,16 @@ Co działa:
 - menu gry
 - wyświetlanie się instrukcji
 - sterowanie postacią + animacja
-- pływające "rybki"
 - ograniczenie czasowe
+- mechanika robienia zdjęć z cooldownem
+- grafiki rybek + wstępne animacje innych zwierząt
+- naliczanie punktów
+- skalowanie grafik
+- rozmiar okna gry dopasowuje się do ekranu komputera
+- najlepszy wynik
+- możliwość powrotu do menu z ekranu końca gry
 
 Do dodanie:
-- zasięg aparatu (hitbox)
-- mechanika robienia zdjęć
-- podliczanie punktów
-- grafiki: małe ryby, duże ryby i inne stworzenia
-- ekran game over, po minięciu czasu (60s)
-- najwyższy wynik
-- lepsze grafiki do menu gry
-- cooldown aparatu do zdjęć z animacją
+- optymalizacja - zrobić bardziej obiektowo
+- animacja ryb (opcjonalnie)
+- ulepszenie niektórych grafik
