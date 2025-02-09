@@ -1,0 +1,1 @@
+            self.direction = (0,-1) 
