@@ -81,7 +81,7 @@ class Player(Unit):
                 self.fire(self.last_direction)
             
     def is_alive(self):
-        if self.hp == 0:
+        if self.hp <= 0:
             return False
         return True
 
@@ -97,7 +97,7 @@ class Player(Unit):
 
 class Keyboard_player(Player):
     def __init__(self, maze, hp, speed  = 10, key_list = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d, pygame.K_SPACE]):
-        super().__init__(maze, 3, speed)
+        super().__init__(maze, hp, speed)
         self.joystick = False
         self.key_list = key_list
         
@@ -121,7 +121,7 @@ class Keyboard_player(Player):
         for event in events:    
             if event.type == pygame.KEYDOWN and event.key in self.key_list:
                 self.input_stack.append(self.map_key[event.key])
-            if event.type == pygame.KEYUP and event.key in self.key_list:
+            if event.type == pygame.KEYUP and event.key in self.key_list and self.input_stack != []:
                 self.input_stack.remove(self.map_key[event.key])
             
             
@@ -134,7 +134,7 @@ class Joystick_player(Player):
     rot_x = 0.0
     rot_y = 0.0
     def __init__(self, maze, hp, speed  = 10, key_list = []):
-        super().__init__(maze, 3, speed)
+        super().__init__(maze, hp, speed)
         self.input_states = {i:0 for i in range(20)}
         self.button = [0, 0, 0, 0, 0]
         self.joystick = True

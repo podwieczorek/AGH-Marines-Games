@@ -12,7 +12,7 @@ class Enemy(Unit):
         self.y
         self.radius = detection_radius
         self.path = []
-        self.cooldown = 0
+        self.cooldown = 100
         self.respawn()
     
     

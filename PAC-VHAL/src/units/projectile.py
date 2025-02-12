@@ -20,7 +20,7 @@ class Bullet(Unit):
 
         self.x = x
         self.y = y
-        print(self.x,self.y)
+        #print(self.x,self.y)
     
     def colides(self, other):
         self.die()

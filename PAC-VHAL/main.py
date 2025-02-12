@@ -13,23 +13,13 @@ from src.core.draw import Draw
 
 
 pygame.init()
-screen = pygame.display.set_mode((1920, 1080))
+screen = pygame.display.set_mode((1920, 1000))
 game = Game(screen)
-game.setup_maze(100, 70, 15)
-game.maze.simplex_cave()
-game.maze.remove_not_connected_spaces()
-        
+
 clock = pygame.time.Clock()
 running = True
 last_speed_change = pygame.time.get_ticks()
 game_speed = 1000  # milliseconds per frame
-
-player = Keyboard_player(game.maze, 99999)
-for i in range(10):
-    Enemy(game.maze)
-    
-for i in range(10):
-    Pickup(game.maze)
 
 while running:
     # poll for events
@@ -38,8 +28,29 @@ while running:
     for event in events:
         if event.type == pygame.QUIT:
             running = False
-
-    game.game_loop(events)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                game.pause_game()
+            
+    for player in Player.player_list:
+        if not player.is_alive():
+            print(f'You died, score: {Player.score}')
+            game.game_running = False
+            
+    game.input.update(events)        
+    
+    
+    match game.state:
+        case 0:
+            running = False
+        case 1:
+            game.ui_loop()
+        case 2:
+            game.game_loop()
+            game.hud()
+        case _:
+            pass
     
     pygame.display.flip() # flip() displays the drawing
     clock.tick(60)  # limits FPS to 60
+    

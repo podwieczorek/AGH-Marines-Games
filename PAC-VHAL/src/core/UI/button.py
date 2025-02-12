@@ -1,14 +1,44 @@
 import pygame
 
 class Button:
-    def __init__(self, text, x, y, width, height, color, hover_color, font, callback):
+    color = (20, 0, 0)
+    hover_color = (50, 50, 50)
+    width = 600
+    height = 50
+    padding = 10
+    
+    buttons_list = []
+    None
+    def __init__(self, text, callback=None):
         self.text = text
-        self.rect = pygame.Rect(x, y, width, height)
-        self.color = color
-        self.hover_color = hover_color
-        self.font = font
+        self.x = 0
+        self.y = 0
+        self.width = self.width
+        self.height = self.height
+        self.font = pygame.font.Font(None, 32)
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.color = self.color
+        self.hover_color = self.hover_color
         self.callback = callback
         self.is_hovered = False
+        
+        self.buttons_list.append(self)
+        
+        
+        
+
+        
+    def update_coords(buttons):
+        for i, button in enumerate(buttons):
+            button.x = pygame.display.get_surface().get_width() // 2 - button.width // 2
+            button.y = 100 + i * (Button.height + Button.padding)
+            button.rect = pygame.Rect(button.x, button.y, button.width, button.height)
+
+    @staticmethod
+    def draw_given(screen, buttons):
+        Button.update_coords(buttons)
+        for button in buttons:
+            button.draw(screen)
 
     def draw(self, screen):
         """Draw the button and handle hover effect."""
@@ -20,14 +50,8 @@ class Button:
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
 
-    def check_hover(self, mouse_pos):
-        """Check if the mouse is over the button."""
-        self.is_hovered = self.rect.collidepoint(mouse_pos)
-
-    def check_click(self, mouse_pos):
-        """Trigger event if clicked."""
-        if self.rect.collidepoint(mouse_pos):
-            self.callback()
-
-
+    def highlight(self):
+        for button in self.buttons_list:
+            button.is_hovered = False
+        self.is_hovered = True
 
