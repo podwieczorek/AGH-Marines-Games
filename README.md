@@ -10,7 +10,6 @@ Co działa:
 - naliczanie punktów
 - skalowanie grafik
 - rozmiar okna gry dopasowuje się do ekranu komputera
-<<<<<<< HEAD
 - najlepszy wynik
 - możliwość powrotu do menu z ekranu końca gry
 
