@@ -141,8 +141,8 @@ CAMERA_COLOUR = [(252, 242, 91),
 
 
 #first player coordinates
-PLAYER_x = SCREEN_WIDTH // 2
-PLAYER_y = SCREEN_HEIGHT // 2
+PLAYER_x = 860
+PLAYER_y = 700
 PLAYER_SPEED = 10
 
 
@@ -206,7 +206,7 @@ class Camera:
 
     def fish_in_range(self, fish):
         camera_hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
-        fish_hitbox = pygame.Rect(fish.x, fish.y, fish.width, fish.height)
+        fish_hitbox = pygame.Rect(fish.x, fish.y, fish.width, fish.height).inflate(5, 5)
         return camera_hitbox.colliderect(fish_hitbox)
 
 class Fish:
@@ -418,39 +418,37 @@ while run:
         draw_title_bar()
 
         #score and high score display
-        put_text(f"Score:  {score}", FONT2, (243, 252, 154), (SCREEN_WIDTH - FONT2.render(f"Score: {score}", True, (243, 252, 154)).get_width()) // 2, SCREEN_HEIGHT//2 - 100)
+        put_text(f"Score:  {score}", FONT2, (243, 252, 154), (SCREEN_WIDTH - FONT2.render(f"Score: {score}", True, (243, 252, 154)).get_width()) // 2, SCREEN_HEIGHT//2 - 200)
         previous_high_score = high_score
 
         if score > previous_high_score:
             new_high_score = score
             save_high_score(new_high_score)
-            put_text("New High Score!", FONT2, (255, 255, 255), (SCREEN_WIDTH - FONT2.render("New High Score!", True, (255, 255, 255)).get_width()) // 2, SCREEN_HEIGHT//2 + 100)
-            put_text(f"High Score:  {new_high_score}", FONT2, (243, 252, 154), (SCREEN_WIDTH - FONT2.render(f"High Score: {new_high_score}", True, (243, 252, 154)).get_width()) // 2, SCREEN_HEIGHT//2)
+            put_text("New High Score!", FONT2, (255, 255, 255), (SCREEN_WIDTH - FONT2.render("New High Score!", True, (255, 255, 255)).get_width()) // 2, SCREEN_HEIGHT//2)
+            put_text(f"High Score:  {new_high_score}", FONT2, (243, 252, 154), (SCREEN_WIDTH - FONT2.render(f"High Score: {new_high_score}", True, (243, 252, 154)).get_width()) // 2, SCREEN_HEIGHT//2 - 100)
         else:
-            put_text(f"High Score:  {previous_high_score}", FONT2, (243, 252, 154), (SCREEN_WIDTH - FONT2.render(f"High Score: {previous_high_score}", True, (243, 252, 154)).get_width()) // 2, SCREEN_HEIGHT // 2)
+            put_text(f"High Score:  {previous_high_score}", FONT2, (243, 252, 154), (SCREEN_WIDTH - FONT2.render(f"High Score: {previous_high_score}", True, (243, 252, 154)).get_width()) // 2, SCREEN_HEIGHT // 2 - 100)
 
         if key[pygame.K_ESCAPE]:
             run = False
             game_over = False
         
         if key[pygame.K_RETURN]:
-            menu = True
+            game_over = False
 
-            #resetting game variables
+            #resetting variables
             score = 0
             fish_list.clear()
             PLAYER_x = SCREEN_WIDTH // 2
             PLAYER_y = SCREEN_HEIGHT // 2
-            
-            pygame.time.delay(100)
-            game_over = False
 
+            menu = True
+            break
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 game_over = False
-                break
             
             if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
