@@ -1,4 +1,5 @@
 import pygame
+import os
 from src.core.maze import Maze
 from src.units.player import Player
 from src.units.enemy import Enemy
@@ -8,6 +9,7 @@ from src.core.draw import Draw
 from src.core.UI.ui import UI
 from src.core.UI.button import Button
 from src.core.input import Input
+from src.core.settings import Settings
 
 class Game:
     
@@ -15,12 +17,14 @@ class Game:
         0: (4, 105, 151),  # Background (blue)
         1: (37, 65, 23),   # Walls (green)
     }
-    last_speed_change = 0
-    game_speed = 1000  # milliseconds per frame
+    last_speed_change = 0    
     
-    
-    def __init__(self, screen):
-        self.screen = screen
+    def __init__(self, settings_path):
+        self.settings = Settings(settings_path)
+        self.settings.load_settings()
+        
+        
+        self.screen = pygame.display.set_mode((self.settings.s["screen_width"], self.settings.s["screen_height"]))
         self.maze = None
         self.draw = None
         self.input = Input()
@@ -34,13 +38,16 @@ class Game:
         self.buttons['settings'] = Button('settings', None)
         self.buttons['resume'] = Button('resume', self.resume_game)
         
+        # settings buttons
+        
+        
         self.current_window = 'main'
         self.current_option = 0
         self.menu_structure = {
             'main': {
                 'buttons': [
                     self.buttons['start'],
-                    self.buttons['settings'],
+                    # self.buttons['settings'],
                     self.buttons['quit'],
                 ]       
             },
@@ -86,7 +93,6 @@ class Game:
         Player.player_list = []
         self.maze = None
         self.draw = None
-        self.draw = None
         self.game_running = False
         
     def start_game(self):
@@ -107,35 +113,36 @@ class Game:
         self.state = 2
         self.current_window = 'game'
         
-    def spawn_player(self, tag=None, hp=1, speed=10):
+    def spawn_player(self, tag=None):
         match tag:
             case 'keyboard':
-                Keyboard_player(self.maze, hp, speed)
+                Keyboard_player(self.maze, self.settings.s["player_hp"], self.settings.s["player_speed"], self.settings.s["bullet_speed"])
             case 'joystick':
-                Joystick_player(self.maze, hp, speed)
+                Joystick_player(self.maze, self.settings.s["player_hp"], self.settings.s["player_speed"], self.settings.s["bullet_speed"])
             case _:
                 raise ValueError("No type provided")
             
             
     def spawn_pickup(self, tag=Pickup, amount=10):
         for i in range(amount):
-            Pickup(self.maze)
+            Pickup(self.maze, self.settings.s["pickup_value"])
             
     def spawn_enemy(self, tag=Enemy, amount=10):
         for i in range(amount):
-            Enemy(self.maze)
+            Enemy(self.maze, 1, self.settings.s["enemy_speed"])
     
     def setup_maze(self, rows, cols, cell_size):
-        self.maze = Maze(rows, cols)
-        self.draw = Draw(self.screen, cell_size, self.maze)
+        self.maze = Maze(self.settings.s["maze_width"], self.settings.s["maze_height"])
+        self.draw = Draw(self.screen, self.settings.s["cell_size"], self.maze)
         
         
         
+    def update_settings(self):
+        self.settings.load_settings()
+        self.screen = pygame.display.set_mode((self.settings.s["screen_width"], self.settings.s["screen_height"]))
+    
         
-        
-        
-        
-        
+    
         
         
         
@@ -189,15 +196,15 @@ class Game:
     
         current_time = pygame.time.get_ticks()
         
-        game_speed = 1000 - current_time // 200
-        if game_speed < 300:
-            game_speed = 300
+        self.settings.s["game_speed"] = 1000 - current_time // 200
+        if self.settings.s["game_speed"] < 300:
+            self.settings.s["game_speed"] = 300
         #print(game_speed)
     
         self.draw.draw_maze()
         for u in Unit.unit_list:
             u.check_colision()
-            if current_time - u.last_frame > game_speed / u.speed:
+            if current_time - u.last_frame > self.settings.s["game_speed"] / u.speed:
                 u.step()
                 u.last_frame = current_time
             self.draw.draw_unit(u)

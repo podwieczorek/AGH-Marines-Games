@@ -1,25 +1,19 @@
 import pygame
+import os
 from src.core.game import Game
-from src.core.UI.ui import UI
-from src.core.UI.button import Button
-from src.core.maze import Maze
 from src.units.player import Player
-from src.units.enemy import Enemy
-from src.units.pickup import Pickup
-from src.units.player import *
-from src.core.draw import Draw
-
+from src.core.settings import Settings
 
 
 
 pygame.init()
-screen = pygame.display.set_mode((1920, 1000))
-game = Game(screen)
+pygame.display.set_caption("PAC-VHAL")
+
+game = Game(os.path.join(os.path.dirname(__file__), 'config', 'settings.json'))
 
 clock = pygame.time.Clock()
 running = True
 last_speed_change = pygame.time.get_ticks()
-game_speed = 1000  # milliseconds per frame
 
 while running:
     # poll for events
@@ -52,5 +46,5 @@ while running:
             pass
     
     pygame.display.flip() # flip() displays the drawing
-    clock.tick(60)  # limits FPS to 60
+    clock.tick(game.settings.s["framerate"])  # limits FPS
     

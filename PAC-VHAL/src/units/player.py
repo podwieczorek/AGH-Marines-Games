@@ -9,11 +9,12 @@ class Player(Unit):
     score = 0
     tag = 'player'
     player_list = []
-    def __init__(self, maze: Maze, hp, speed  = 10):
+    def __init__(self, maze: Maze, hp, speed, projectile_speed):
         super().__init__(maze, speed)  # Call Unit's __init__ to initialize maze, x, y, and append to list
         self.direction = (0, 0)
         self.input_stack = []
         self.last_direction = (1, 0)
+        self.projectile_speed = projectile_speed
         self.x = 1
         self.y = 1
         self.hp = hp
@@ -86,7 +87,7 @@ class Player(Unit):
         return True
 
     def fire(self, direction):
-        Bullet(self.maze, self.x, self.y , direction)
+        Bullet(self.maze, self.x, self.y , direction, self.projectile_speed)
 
 
     def __str__(self):
@@ -96,8 +97,8 @@ class Player(Unit):
         return f'Player {self.player_list.index(self)}'
 
 class Keyboard_player(Player):
-    def __init__(self, maze, hp, speed  = 10, key_list = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d, pygame.K_SPACE]):
-        super().__init__(maze, hp, speed)
+    def __init__(self, maze, hp, speed, projectile_speed, key_list = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d, pygame.K_SPACE]):
+        super().__init__(maze, hp, speed, projectile_speed)
         self.joystick = False
         self.key_list = key_list
         
@@ -133,8 +134,8 @@ class Joystick_player(Player):
     # variables we'll store the rotations in, initialised to zero
     rot_x = 0.0
     rot_y = 0.0
-    def __init__(self, maze, hp, speed  = 10, key_list = []):
-        super().__init__(maze, hp, speed)
+    def __init__(self, maze, hp, speed, projectile_speed,  key_list = []):
+        super().__init__(maze, hp, speed, projectile_speed)
         self.input_states = {i:0 for i in range(20)}
         self.button = [0, 0, 0, 0, 0]
         self.joystick = True

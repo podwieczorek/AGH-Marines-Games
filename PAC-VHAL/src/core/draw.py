@@ -1,16 +1,15 @@
 import pygame
 from src.core.maze import COLORS
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1080
 
 class Draw():
     def __init__(self, screen, size, maze):
         self.screen = screen
+        self.width, self.height = pygame.display.get_surface().get_size()
         self.size = size
         self.maze = maze
         self.offset = (
-            (SCREEN_WIDTH - maze.cols * size) // 2,
-            (SCREEN_HEIGHT - maze.rows * size) // 2
+            (self.width - maze.cols * size) // 2,
+            (self.height - maze.rows * size) // 2
         )
 
         self.img_map = {
