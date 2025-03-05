@@ -12,11 +12,18 @@ class Animator:
                 'moving': Spritesheet(os.path.join(root, 'static', 'images', 'units', 'pacvhal-move.png'), 4, 1, self.draw.size, 16, 8),
             },
             'bullet': {
-                'moving': Spritesheet(os.path.join(root, 'static', 'images', 'units', 'bullet-move.png'), 1, 1, self.draw.size, 8, 8),
+                'moving': Spritesheet(os.path.join(root, 'static', 'images', 'units', 'bullet-move.png'), 1, 1, self.draw.size, 16, 8),
+            },
+            'enemy': {
+                'moving': Spritesheet(os.path.join(root, 'static', 'images', 'units', 'enemy-move.png'), 4, 1, self.draw.size, 16, 8),
             }
         }
     
     def get_angle(self, unit):
+        if unit.direction == (0, 0) and unit.last_direction != (0, 0):
+            direction = unit.last_direction
+        else:
+            direction = unit.direction
         match direction:
             case (1, 0):
                 return 0
@@ -30,11 +37,7 @@ class Animator:
                 return 0
             
     def get_animation_coords(self, unit):
-        if unit.direction == (0, 0) and unit.last_direction != (0, 0):
-            direction = unit.last_direction
-        else:
-            direction = unit.direction
-        match direction:
+        match unit.direction:
             case (1, 0):
                 return (unit.x-1, unit.y)
             case (0, 1):

@@ -24,4 +24,8 @@ class Bullet(Unit):
         #print(self.x,self.y)
     
     def colides(self, other):
-        self.die()
+        match other.tag:
+            case 'player':
+                pass
+            case _:   
+                 self.die()

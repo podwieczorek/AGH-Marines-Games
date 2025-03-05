@@ -144,7 +144,7 @@ class Game:
             
     def spawn_enemy(self, tag=Enemy, amount=10):
         for i in range(amount):
-            Enemy(self.maze, 1, self.settings.s["enemy_speed"])
+            Enemy(self.maze, 5, self.settings.s["enemy_speed"])
     
     def setup_maze(self, rows, cols, cell_size):
         self.maze = Maze(self.settings.s["maze_width"], self.settings.s["maze_height"])

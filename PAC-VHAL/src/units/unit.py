@@ -23,6 +23,7 @@ class Unit:
         for unit in Unit.unit_list:
             if self.does_colide(unit):
                 unit.colides(self)
+                self.colides(unit)
     
     
     def get_valid_directions(self):
@@ -36,8 +37,6 @@ class Unit:
     def step(self):
         pass
     
-    def draw(self):
-        draw_square(screen, (0, 255, 0), self.x, self.y, CELL_SIZE)
 
 
     def does_colide(self, other):
@@ -69,5 +68,6 @@ class Unit:
     
         
     def die(self):
-        self.unit_list.remove(self)
-        del self
+        if self in self.unit_list:
+            self.unit_list.remove(self)
+            del self

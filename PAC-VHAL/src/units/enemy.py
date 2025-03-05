@@ -6,13 +6,13 @@ class Enemy(Unit):
     tag='enemy'
     def __init__(self, maze, detection_radius = 10, speed = 10):
         super().__init__(maze,speed)
-            
+        self.state = 'moving'
         self.direction = (0, 0)
         self.x
         self.y
         self.radius = detection_radius
         self.path = []
-        self.cooldown = 100
+        self.cooldown = 10
         self.respawn()
     
     
