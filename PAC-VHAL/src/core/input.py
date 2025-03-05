@@ -28,4 +28,7 @@ class Input():
                 if event.key in self.menu_key:
                     return self.menu_key[event.key]
 
+    def update(self, events):
+        self.events = events
+        return self.events
         
