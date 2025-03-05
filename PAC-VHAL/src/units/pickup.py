@@ -6,6 +6,7 @@ class Pickup(Unit):
     tag='pickup'
     def __init__(self, maze, value=1):
         super().__init__(maze, 1)
+        self.speed = 700
         x = random.randint(0, maze.cols - 1)
         y = random.randint(0, maze.rows - 1)
         while maze.grid[y][x] == 1:

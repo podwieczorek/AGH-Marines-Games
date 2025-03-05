@@ -12,10 +12,13 @@ class Animator:
                 'moving': Spritesheet(os.path.join(root, 'static', 'images', 'units', 'pacvhal-move.png'), 4, 1, self.draw.size, 16, 8),
             },
             'bullet': {
-                'moving': Spritesheet(os.path.join(root, 'static', 'images', 'units', 'bullet-move.png'), 1, 1, self.draw.size, 16, 8),
+                'moving': Spritesheet(os.path.join(root, 'static', 'images', 'units', 'bullet-move.png'), 4, 1, self.draw.size, 16, 8),
             },
             'enemy': {
                 'moving': Spritesheet(os.path.join(root, 'static', 'images', 'units', 'enemy-move.png'), 4, 1, self.draw.size, 16, 8),
+            },
+            'pickup': {
+                'idle': Spritesheet(os.path.join(root, 'static', 'images', 'units', 'pickup-idle.png'), 4, 1, self.draw.size, 8, 8),
             }
         }
     

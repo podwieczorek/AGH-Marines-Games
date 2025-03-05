@@ -33,9 +33,10 @@ class Game:
         self.screen = pygame.display.set_mode((self.settings.s["screen_width"], self.settings.s["screen_height"]))
         self.maze = None
         self.draw = None
+        self.ui = UI(self.root)
         self.input = Input()
         self.animator = None
-        self.state = 1
+        self.state = -1
         self.game_running = False
         
         
@@ -79,7 +80,8 @@ class Game:
                 'buttons': [
                     
                 ]
-            }
+            },
+            
         }
     def quit_game(self):
         self.game_running = False
@@ -96,7 +98,11 @@ class Game:
         self.current_window = 'game'
         
     def game_over(self):
-        pass   
+        self.state = 3
+        self.ui.death_screen(self.screen, Player.score)
+        self.current_option = 0
+        self.current_window = 'main'
+        
     
     #resets the game
     def tabula_rasa(self): 
@@ -115,13 +121,12 @@ class Game:
         self.setup_maze(100, 70, 15)
         self.maze.simplex_cave(random.randrange(0,100000))
         self.maze.remove_not_connected_spaces()
-        self.draw=Draw(self.screen, self.settings.s['cell_size'], self.maze)
+        self.draw=Draw(self.screen, self.settings.s['cell_size'], self.maze, self.root)
         self.animator = Animator(self.draw, self.root)
         
         self.spawn_pickup(amount=10)
         self.spawn_enemy(amount=10)
         self.spawn_player('keyboard')
-        self.spawn_player('joystick')
         
         
         self.game_running = True
@@ -148,7 +153,7 @@ class Game:
     
     def setup_maze(self, rows, cols, cell_size):
         self.maze = Maze(self.settings.s["maze_width"], self.settings.s["maze_height"])
-        self.draw = Draw(self.screen, self.settings.s["cell_size"], self.maze)
+        self.draw = Draw(self.screen, self.settings.s["cell_size"], self.maze, self.root)
         
         
         
@@ -203,6 +208,16 @@ class Game:
 
     def game_loop(self):
         for player in Player.player_list:
+            if not player.is_alive():
+                while True:
+                    if self.input.get_menu_instructions() == 'return' or self.input.get_menu_instructions() == 'space':
+                        self.state = 2
+                        break
+                    self.input.update(pygame.event.get())
+                    self.ui.death_screen(self.screen, Player.score)
+                    pygame.display.flip()
+                self.game_over()
+                break
             player.input(self.input.events)
     
         current_time = pygame.time.get_ticks()

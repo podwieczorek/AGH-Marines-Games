@@ -8,7 +8,7 @@
     "game_speed": 1000,
     "player_speed": 200,
     "bullet_speed": 100,
-    "enemy_speed": 200,
-    "player_hp": 3,
+    "enemy_speed": 250,
+    "player_hp": 1,
     "pickup_value": 1
 }

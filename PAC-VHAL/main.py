@@ -15,8 +15,26 @@ clock = pygame.time.Clock()
 running = True
 last_speed_change = pygame.time.get_ticks()
 
+bg = pygame.image.load(os.path.join(root, 'static', 'images', 'background', 'title.png'))
+bg = pygame.transform.scale(bg, (game.settings.s["screen_width"], game.settings.s["screen_height"]))
+
 while running:
     game.screen.fill(game.COLORS[1])  # fill screen with background color
+    game.screen.blit(bg, (0, 0))
+    
+    while game.state == -1:
+        game.screen.blit(bg, (0, 0))
+        game.ui.instructions(game.screen)
+        pygame.display.flip()
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
+                    game.state = 1
+        clock.tick(game.settings.s["framerate"])
+    
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     events = pygame.event.get()
