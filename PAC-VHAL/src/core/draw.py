@@ -1,5 +1,7 @@
 import pygame
 from src.core.maze import COLORS
+from src.units.player import Player
+import os
 
 class Draw():
     def __init__(self, screen, size, maze):
@@ -7,14 +9,13 @@ class Draw():
         self.width, self.height = pygame.display.get_surface().get_size()
         self.size = size
         self.maze = maze
+        self.font = pygame.font.Font(None, 36)
+        
         self.offset = (
             (self.width - maze.cols * size) // 2,
             (self.height - maze.rows * size) // 2
         )
 
-        self.img_map = {
-            
-        }
         self.color_map = {
             'player': (255, 0, 0),
             'enemy': (0, 123, 255),
@@ -37,13 +38,14 @@ class Draw():
         x, y = self.grid_to_screen(x, y)
         self.draw_raw(x, y, self.size, color)
         
-        
+    def draw_image(self, x, y, img):
+        x, y = self.grid_to_screen(x, y)
+        self.screen.blit(img, (x, y))
+    
+    
     def draw_unit(self, unit):
         x, y = self.grid_to_screen(unit.x, unit.y)
-        if unit.tag in self.img_map:
-            self.draw_raw(x, y, self.size, None, self.img_map[unit.tag])
-        elif unit.tag in self.color_map:
-            self.draw_raw(x, y, self.size, self.color_map[unit.tag])
+        self.draw_raw(x, y, self.size, self.color_map[unit.tag])
             
     def draw_maze(self):
         cols = self.maze.cols
@@ -52,6 +54,16 @@ class Draw():
             for x in range(cols):
                 color = COLORS[self.maze.grid[y][x]]
                 self.draw_square(x, y, color)
+                
+    def draw_hud(self):
+        text = self.font.render(f'Score: {Player.score}', True, (255, 255, 255))
+        self.screen.blit(text, (10, 10))
+        
+        for index, player in enumerate(Player.player_list):
+            hp = player.hp
+            text = self.font.render(f'HP: {hp}', True, (255, 255, 255))
+            self.screen.blit(text, (10, 10+30*(index+1)))
+    
         
 
 

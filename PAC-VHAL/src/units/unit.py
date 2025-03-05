@@ -3,6 +3,8 @@ class Unit:
     tag = 'nikt'
     def __init__(self, maze, speed):
         self.last_frame = 0
+        self.last_direction = (0, 0)
+        self.state = 'idle'
         self.speed = speed
         self.maze = maze
         self.x = -1  # Initialize x position

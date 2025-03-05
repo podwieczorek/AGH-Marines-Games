@@ -10,6 +10,7 @@ from src.core.UI.ui import UI
 from src.core.UI.button import Button
 from src.core.input import Input
 from src.core.settings import Settings
+from src.core.animation import Animator
 
 class Game:
     
@@ -17,19 +18,29 @@ class Game:
         0: (4, 105, 151),  # Background (blue)
         1: (37, 65, 23),   # Walls (green)
     }
-    last_speed_change = 0    
+    last_speed_change = 0   
+    last_time = 0
+    tick_rate = 60 
     
-    def __init__(self, settings_path):
-        self.settings = Settings(settings_path)
+    def __init__(self, root):
+        self.root = root
+        self.settings = Settings(os.path.join(root, 'config', 'settings.json'))
         self.settings.load_settings()
+        
+        
         
         
         self.screen = pygame.display.set_mode((self.settings.s["screen_width"], self.settings.s["screen_height"]))
         self.maze = None
         self.draw = None
         self.input = Input()
+        self.animator = None
         self.state = 1
         self.game_running = False
+        
+        
+        self.current_game_speed = self.settings.s["game_speed"]
+        
         
         self.buttons = {}
         self.buttons['start'] = Button('start', self.start_game)
@@ -93,7 +104,9 @@ class Game:
         Player.player_list = []
         self.maze = None
         self.draw = None
+        self.animator = None
         self.game_running = False
+        self.current_game_speed = self.settings.s["game_speed"]
         
     def start_game(self):
         self.tabula_rasa()
@@ -102,11 +115,13 @@ class Game:
         self.setup_maze(100, 70, 15)
         self.maze.simplex_cave(random.randrange(0,100000))
         self.maze.remove_not_connected_spaces()
-        self.draw=Draw(self.screen, 15, self.maze)
+        self.draw=Draw(self.screen, self.settings.s['cell_size'], self.maze)
+        self.animator = Animator(self.draw, self.root)
         
         self.spawn_pickup(amount=10)
         self.spawn_enemy(amount=10)
         self.spawn_player('keyboard')
+        self.spawn_player('joystick')
         
         
         self.game_running = True
@@ -141,7 +156,7 @@ class Game:
         self.settings.load_settings()
         self.screen = pygame.display.set_mode((self.settings.s["screen_width"], self.settings.s["screen_height"]))
     
-        
+    
     
         
         
@@ -177,17 +192,13 @@ class Game:
         
         
         Button.draw_given(self.screen, current_buttons)  
+
+
+
+
+
+
     
-    def hud(self):
-        pass
-
-
-
-
-
-
-
-
 
 
     def game_loop(self):
@@ -196,18 +207,30 @@ class Game:
     
         current_time = pygame.time.get_ticks()
         
-        self.settings.s["game_speed"] = 1000 - current_time // 200
-        if self.settings.s["game_speed"] < 300:
-            self.settings.s["game_speed"] = 300
+        self.current_game_speed = 1000 - current_time // 200
+        if self.current_game_speed < 300:
+            self.current_game_speed = 300
         #print(game_speed)
+        
     
         self.draw.draw_maze()
+        tick = current_time
+        
         for u in Unit.unit_list:
             u.check_colision()
-            if current_time - u.last_frame > self.settings.s["game_speed"] / u.speed:
+            if tick - u.last_frame >= u.speed:
                 u.step()
-                u.last_frame = current_time
-            self.draw.draw_unit(u)
-        last_tick = current_time
-
+                u.last_frame = tick
+        
+        
+        
+        
+         
+        for u in Unit.unit_list:
+            if self.animator.can_animate(u):
+                self.animator.animate(u, int((tick-u.last_frame)%u.speed//(u.speed/4)))
+            else:
+                self.draw.draw_unit(u)
+        self.draw.draw_hud()
+    
     

@@ -2,20 +2,21 @@ import pygame
 import os
 from src.core.game import Game
 from src.units.player import Player
-from src.core.settings import Settings
 
+root = os.path.dirname(__file__)
 
 
 pygame.init()
 pygame.display.set_caption("PAC-VHAL")
 
-game = Game(os.path.join(os.path.dirname(__file__), 'config', 'settings.json'))
+game = Game(root)
 
 clock = pygame.time.Clock()
 running = True
 last_speed_change = pygame.time.get_ticks()
 
 while running:
+    game.screen.fill(game.COLORS[1])  # fill screen with background color
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     events = pygame.event.get()
@@ -41,7 +42,6 @@ while running:
             game.ui_loop()
         case 2:
             game.game_loop()
-            game.hud()
         case _:
             pass
     

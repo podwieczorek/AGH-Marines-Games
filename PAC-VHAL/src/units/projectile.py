@@ -5,6 +5,7 @@ class Bullet(Unit):
     tag='bullet'
     def __init__(self, maze, x, y, direction, speed = 30):
         super().__init__(maze, speed)
+        self.state = 'moving'
         self.x = x
         self.y = y
         self.direction = direction

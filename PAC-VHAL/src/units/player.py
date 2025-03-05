@@ -42,15 +42,27 @@ class Player(Unit):
         
         
     def step(self):
-        if self.is_alive() != True:
-            print("dead")
-        if len(self.input_stack) != 0:
-            self.execute_key(self.input_stack[-1])
-        new_x, new_y = self.x + self.direction[0], self.y + self.direction[1]
-        if 0 <= new_x < self.maze.cols and 0 <= new_y < self.maze.rows and self.maze.grid[new_y][new_x] == 0:
-            self.x, self.y = new_x, new_y
         if self.direction != (0, 0):
             self.direction = (0, 0)
+            
+        if len(self.input_stack) != 0:
+            self.execute_key(self.input_stack[-1])
+        
+        new_x, new_y = self.x + self.direction[0], self.y + self.direction[1]
+        
+        
+        
+        if 0 <= new_x < self.maze.cols and 0 <= new_y < self.maze.rows and self.maze.grid[new_y][new_x] == 0:
+            if self.direction != (0, 0):
+                self.state = 'moving'
+            else:
+                self.state = 'idle'
+            self.x, self.y = new_x, new_y
+        else:
+            self.direction = (0, 0)
+            self.state = 'idle'
+            
+            
             
         
     def colides(self, other):
@@ -80,6 +92,7 @@ class Player(Unit):
                 self.last_direction = self.direction
             case 'fire':
                 self.fire(self.last_direction)
+                self.state = 'firing'
             
     def is_alive(self):
         if self.hp <= 0:
