@@ -17,3 +17,7 @@ Co działa:
 
 Do dodanie:
 - animacja ryb (opcjonalnie)
+<<<<<<< HEAD
+=======
+- ulepszenie niektórych grafik
+>>>>>>> 5d3ce47b013ef10b944a150bbe928d57669f732e
