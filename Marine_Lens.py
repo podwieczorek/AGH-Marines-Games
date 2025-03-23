@@ -111,8 +111,6 @@ while run:
             game_over = False
         
         if key[pygame.K_RETURN]:
-            game_over = False
-
             #resetting variables
             score = 0
             fish_list.clear()
@@ -120,6 +118,8 @@ while run:
             player.y = SCREEN_HEIGHT // 2
 
             menu = True
+            game_over = False
+            start_time = pygame.time.get_ticks()
             break
 
         for event in pygame.event.get():
@@ -144,6 +144,7 @@ while run:
                     player.y = SCREEN_HEIGHT // 2
 
                     menu = True
+                    start_time = pygame.time.get_ticks()
                     break
             
             if event.type == pygame.JOYBUTTONDOWN:
