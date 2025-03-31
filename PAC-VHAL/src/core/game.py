@@ -11,6 +11,7 @@ from src.core.UI.button import Button
 from src.core.input import Input
 from src.core.settings import Settings
 from src.core.animation import Animator
+from src.core.high_score_manager import HighScoreManager
 
 class Game:
     
@@ -26,10 +27,8 @@ class Game:
         self.root = root
         self.settings = Settings(os.path.join(root, 'config', 'settings.json'))
         self.settings.load_settings()
-        
-        
-        
-        
+        self.high_score_manager = HighScoreManager(os.path.join(self.root, 'config', 'high_scores.json'))  # Add high score manager
+
         self.screen = pygame.display.set_mode((self.settings.s["screen_width"], self.settings.s["screen_height"]))
         self.maze = None
         self.draw = None
@@ -98,11 +97,30 @@ class Game:
         self.current_window = 'game'
         
     def game_over(self):
+        # Update high scores
+        self.high_score_manager.update_high_scores(Player.score)
+
+        self.tabula_rasa()
         self.state = 3
-        self.ui.death_screen(self.screen, Player.score)
         self.current_option = 0
         self.current_window = 'main'
-        
+
+        # Handle events on the death screen
+        while self.state == 3:
+            top_scores = self.high_score_manager.get_high_scores()
+            self.ui.death_screen(self.screen, Player.score, top_scores)
+            events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    self.state = 0
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        self.start_game()
+                    if event.key == pygame.K_ESCAPE or event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
+                        self.state = 1
+                        self.current_window = 'main'
+
+            pygame.display.flip()
     
     #resets the game
     def tabula_rasa(self): 
@@ -116,6 +134,7 @@ class Game:
         
     def start_game(self):
         self.tabula_rasa()
+        Player.score = 0
         Player.player_list = []
         Enemy.enemy_list = []
         self.setup_maze(100, 70, 15)
@@ -209,43 +228,30 @@ class Game:
     def game_loop(self):
         for player in Player.player_list:
             if not player.is_alive():
-                while True:
-                    if self.input.get_menu_instructions() == 'return' or self.input.get_menu_instructions() == 'space':
-                        self.state = 2
-                        break
-                    self.input.update(pygame.event.get())
-                    self.ui.death_screen(self.screen, Player.score)
-                    pygame.display.flip()
                 self.game_over()
-                break
+                return
             player.input(self.input.events)
-    
+
         current_time = pygame.time.get_ticks()
-        
+
         self.current_game_speed = 1000 - current_time // 200
         if self.current_game_speed < 300:
             self.current_game_speed = 300
         #print(game_speed)
-        
-    
+
         self.draw.draw_maze()
         tick = current_time
-        
+
         for u in Unit.unit_list:
             u.check_colision()
             if tick - u.last_frame >= u.speed:
                 u.step()
                 u.last_frame = tick
-        
-        
-        
-        
-         
+
         for u in Unit.unit_list:
             if self.animator.can_animate(u):
                 self.animator.animate(u, int((tick-u.last_frame)%u.speed//(u.speed/4)))
             else:
                 self.draw.draw_unit(u)
         self.draw.draw_hud()
-    
-    
+

@@ -5,30 +5,23 @@ class UI:
     def __init__(self, root):
         self.root = root
     
-    def death_screen(self, screen, points):
-        # Set up font and size
-        font = pygame.font.Font(None, 72)
-        small_font = pygame.font.Font(None, 36)
-        
-        # Define the text to display
-        death_text = "Game Over"
-        points_text = f"Points Collected: {points}"
-        restart_text = "Press 'R' to Restart"
-        
-        # Render the text
-        death_surface = font.render(death_text, True, (255, 0, 0))
-        points_surface = small_font.render(points_text, True, (255, 255, 255))
-        restart_surface = small_font.render(restart_text, True, (255, 255, 255))
-        
-        # Get the text rectangles
-        death_rect = death_surface.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 - 50))
-        points_rect = points_surface.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
-        restart_rect = restart_surface.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 + 50))
-        
-        # Blit the text to the screen
-        screen.blit(death_surface, death_rect)
-        screen.blit(points_surface, points_rect)
-        screen.blit(restart_surface, restart_rect)
+    def death_screen(self, screen, score, top_scores):
+        font = pygame.font.Font(None, 74)
+        text = font.render(f"Game Over! Score: {score}", True, (255, 255, 255))
+        restart_text = font.render("Press R to Restart", True, (255, 255, 255))
+        quit_text = font.render("Press ESC to Quit", True, (255, 255, 255))
+
+        screen.fill((0, 0, 0))
+        screen.blit(text, (screen.get_width() // 2 - text.get_width() // 2, 100))
+
+        # Display the top 5 scores
+        font_small = pygame.font.Font(None, 50)
+        for i, high_score in enumerate(top_scores):
+            high_score_text = font_small.render(f"{i + 1}. {high_score}", True, (255, 255, 255))
+            screen.blit(high_score_text, (screen.get_width() // 2 - high_score_text.get_width() // 2, 200 + i * 50))
+
+        screen.blit(restart_text, (screen.get_width() // 2 - restart_text.get_width() // 2, 500))
+        screen.blit(quit_text, (screen.get_width() // 2 - quit_text.get_width() // 2, 600))
         
         # Update the display
         pygame.display.flip()

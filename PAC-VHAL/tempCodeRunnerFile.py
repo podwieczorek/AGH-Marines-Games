@@ -1,1 +1,2 @@
-game.ui.instructions(game.screen)
+
+    match game.state:

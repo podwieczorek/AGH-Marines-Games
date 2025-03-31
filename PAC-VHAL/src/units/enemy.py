@@ -65,6 +65,7 @@ class Enemy(Unit):
             
 
     def respawn(self):
+        self.cooldown = 10
         x = random.randint(0, self.maze.cols - 1)
         y = random.randint(0, self.maze.rows - 1)
         while self.maze.grid[y][x] == 1:
