@@ -119,9 +119,9 @@ while run:
                 if options[select] == "Exit":
                     run = False
                 elif options[select] == "MARINE LENS":
-                    subprocess.Popen(["python3", "Marine_Lens/Marine_Lens.py"])
+                    subprocess.run(["python3", "Marine_Lens/Marine_Lens.py"])
                 elif options[select] == "PAC-VHAL":
-                    subprocess.Popen(["python3", "PAC-VHAL/main.py"])
+                    subprocess.run(["python3", "PAC-VHAL/main.py"])
 
     pygame.display.update()
 
