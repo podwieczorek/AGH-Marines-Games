@@ -1,4 +1,5 @@
 import pygame
+import subprocess
 
 pygame.init()
 
@@ -118,7 +119,7 @@ while run:
                 if options[select] == "Exit":
                     run = False
                 elif options[select] == "MARINE LENS":
-                    print(f"Marine lens")  # todo run marine lens here
+                    subprocess.Popen(["python3", "Marine_Lens/Marine_Lens.py"])
                 elif options[select] == "PAC-VHAL":
                     print(f"Pac-vhal")  # todo run pac-vhal here
 
