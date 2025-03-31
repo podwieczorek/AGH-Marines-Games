@@ -121,7 +121,7 @@ while run:
                 elif options[select] == "MARINE LENS":
                     subprocess.Popen(["python3", "Marine_Lens/Marine_Lens.py"])
                 elif options[select] == "PAC-VHAL":
-                    print(f"Pac-vhal")  # todo run pac-vhal here
+                    subprocess.Popen(["python3", "PAC-VHAL/main.py"])
 
     pygame.display.update()
 
