@@ -65,11 +65,10 @@ class Player(Unit):
                 other.respawn()
             case 'pickup':
                 Player.score += other.value
-                print("score: ", self.score)
             case _:
                 pass
         
-    def input(self,events):        
+    def input(self, events):
         pass
 
     def execute_key(self, key):              
@@ -165,11 +164,9 @@ class Joystick_player(Player):
             2: 0,
             3: 0
         }
-        for event in events:    
-                # print(event.axis)
+        for event in events:
             if event.type == pygame.JOYBUTTONDOWN:
                 key = event.button
-                # print(key)
                 if key in self.map_key:
                     self.input_stack.append(self.map_key[key])
                 # else:

@@ -17,7 +17,6 @@ class Spritesheet:
                 pygame.transform.scale(self.get_image(col * width, row * height, width, height), (size*ratio, size), frame)
                 frame.set_colorkey((0, 0, 0))
                 self.frames.append(frame)
-        print(self.frames)
 
     def get_frame(self, index):
         return self.frames[index % len(self.frames)]

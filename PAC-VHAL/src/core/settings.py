@@ -23,6 +23,5 @@ class Settings:
         return self.s.get(key, default)
 
     def set_setting(self, key, value):
-        print(os.path.relpath(__file__))
         self.s[key] = value
         self.save_settings()

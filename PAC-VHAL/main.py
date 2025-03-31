@@ -47,7 +47,6 @@ while running:
             
     for player in Player.player_list:
         if not player.is_alive():
-            print(f'You died, score: {Player.score}')
             game.game_running = False
             
     game.input.update(events)        
