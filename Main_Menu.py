@@ -117,9 +117,11 @@ while run:
             if event.key == pygame.K_RETURN:
                 if options[select] == "Exit":
                     run = False
-                else:
-                    print(f"Selected : {options[select]}")
-    
+                elif options[select] == "MARINE LENS":
+                    print(f"Marine lens")  # todo run marine lens here
+                elif options[select] == "PAC-VHAL":
+                    print(f"Pac-vhal")  # todo run pac-vhal here
+
     pygame.display.update()
 
 pygame.quit()
