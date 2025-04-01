@@ -33,7 +33,6 @@ class UI:
         # Define the text to display
         instructions_text = [
             "Instructions:",
-            "Use arrow keys to move",
             "Press 'ESC' to pause",
             "WSAD to move",
             "Space to shoot",
