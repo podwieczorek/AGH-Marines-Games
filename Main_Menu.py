@@ -33,14 +33,14 @@ HIGHLIGHT = (178, 176, 235)
 # menu options
 options = ["MARINE LENS", "PAC-VHAL", "Exit"]
 select = 0
-spacing = 50
+spacing = 45
 
 # images
 title = scale_image(pygame.image.load("images/title.png"))
 
 game_images = [
-    scale_image(pygame.image.load("images/game1.png")),
-    scale_image(pygame.image.load("images/game2.png"))
+    scale_image(pygame.image.load("Marine_Lens/game_images/bigpink1.png")),
+    scale_image(pygame.image.load("Marine_Lens/game_images/bigblue1.png"))
 ]
 
 option_frame = scale_image(pygame.image.load("images/option_frame1.png"))
@@ -99,8 +99,12 @@ while run:
             else:
                 window.blit(option_frame, (x-25, SCREEN_HEIGHT//2 - 20))
 
-            put_text(option, PIXEL_FONT, colour, x, SCREEN_HEIGHT//2)
-            window.blit(game_images[i], (x + 25, SCREEN_HEIGHT//2 + 45))
+            font_placement_x = x
+            if option == "PAC-VHAL":
+                font_placement_x += 20
+
+            put_text(option, PIXEL_FONT, colour, font_placement_x, SCREEN_HEIGHT//2)
+            window.blit(game_images[i], (x + 32, SCREEN_HEIGHT//2 + 80))
             x += PIXEL_FONT.size(option)[0] + 100 + PIXEL_FONT.size("Exit")[0]  #spacing between options
 
     put_text("Exit", PIXEL_FONT_EXIT, colour, SCREEN_WIDTH * 0.9, SCREEN_HEIGHT*0.9)
